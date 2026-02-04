@@ -218,12 +218,3 @@ Given more time, I would add:
 - **Rich Previews** - Show more details on hover
 - **Dark Mode** - Theme toggle
 
-## Author
-
-Built as a technical assessment demonstrating:
-- Modern React patterns
-- GraphQL integration
-- TypeScript proficiency
-- Component architecture
-- Performance optimization
-- Accessibility best practices
