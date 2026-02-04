@@ -14,7 +14,7 @@ A production-ready, Google-like search experience for Nollywood movies, TV shows
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone <https://github.com/priyez/Nollywood-Search.git>
 cd test
 
 # Install dependencies
