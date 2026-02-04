@@ -54,6 +54,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 ├── lib/
 │   ├── apollo-client.ts          # Apollo Client setup
 │   ├── queries.ts                # GraphQL queries
+│   ├── metadata.ts               # Metadata for SEO
 │   └── textUtils.tsx             # Text utilities
 └── .env.local                    # Environment variables
 ```
