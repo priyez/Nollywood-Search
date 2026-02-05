@@ -38,3 +38,38 @@ export const cleanBioText = (bio: string | null): string => {
 
     return cleaned.substring(0, 120) + (cleaned.length > 120 ? '...' : '');
 };
+
+/**
+ * Derives the primary role from a person's bio
+ */
+export const getKnownFor = (bio: string | null): string => {
+    if (!bio) return 'Entertainment';
+    const lowerBio = bio.toLowerCase();
+    if (lowerBio.includes('actor') || lowerBio.includes('actress')) return 'Acting';
+    if (lowerBio.includes('director') || lowerBio.includes('filmmaker')) return 'Directing';
+    if (lowerBio.includes('producer')) return 'Production';
+    if (lowerBio.includes('writer') || lowerBio.includes('screenwriter')) return 'Writing';
+    return 'Entertainment';
+};
+
+/**
+ * Formats a date string to a readable format
+ */
+export const formatDate = (date: string | null | undefined): string | null => {
+    if (!date) return null;
+    return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+};
+
+/**
+ * Calculates age from birth date
+ */
+export const calculateAge = (birthDate: string): number | null => {
+    if (!birthDate) return null;
+    const diff = Date.now() - new Date(birthDate).getTime();
+    const age = new Date(diff).getUTCFullYear() - 1970;
+    return age > 0 ? age : null;
+};

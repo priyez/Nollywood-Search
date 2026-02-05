@@ -1,9 +1,9 @@
 interface TypeBadgeProps {
-    type: 'MOVIE' | 'TV_SHOW' | 'PERSON';
+    type: string;
 }
 
 /**
- * Badge component for displaying entity type
+ * Badge component
  */
 export function TypeBadge({ type }: TypeBadgeProps) {
     return (
