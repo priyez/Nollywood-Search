@@ -1,6 +1,6 @@
 import { SearchHit } from '@/lib/queries';
 import { useRouter } from 'next/navigation';
-import { highlightMatch, cleanBioText } from '@/lib/textUtils';
+import { highlightMatch, cleanBioText, getKnownFor } from '@/lib/textUtils';
 import { SearchResultIcon } from './SearchResultIcon';
 import { TypeBadge } from './TypeBadge';
 import Image from 'next/image';
@@ -18,41 +18,45 @@ interface SearchResultItemProps {
 export function SearchResultItem({ hit, isSelected, onSelect, term }: SearchResultItemProps) {
     const router = useRouter();
 
+    const isWork = hit.__typename === 'WorkSearchHit';
+    const work = isWork ? hit.work : null;
+    const person = isWork ? null : hit.person;
+
+    // Safety check: if the hit is null or missing the expected data, don't render it
+    if ((isWork && !work) || (!isWork && !person)) {
+        return null;
+    }
+
     const handleMouseEnter = () => {
-        if (hit.__typename === 'WorkSearchHit') {
-            router.prefetch(`/work/${hit.work.slug}`);
-        } else {
-            router.prefetch(`/person/${hit.person.slug}`);
+        if (isWork && work?.slug) {
+            router.prefetch(`/work/${work.slug}`);
+        } else if (person?.slug) {
+            router.prefetch(`/person/${person.slug}`);
         }
     };
 
-    const isWork = hit.__typename === 'WorkSearchHit';
-    const title = isWork ? hit.work.title : hit.person.name;
+    const title = isWork ? work!.title : person!.name;
 
     let typeLabel = 'PERSON';
     if (isWork) {
-        typeLabel = hit.work.workType === 'MOVIE' ? 'MOVIE' : 'TV SHOW';
+        typeLabel = work!.workType === 'MOVIE' ? 'MOVIE' : 'TV SHOW';
     } else {
-        // Simple heuristic to detect role from bio
-        const bio = hit.person.bio?.toLowerCase() || '';
-        if (bio.includes('actor') || bio.includes('actress')) {
-            typeLabel = 'ACTOR';
-        } else if (bio.includes('director') || bio.includes('filmmaker')) {
-            typeLabel = 'DIRECTOR';
-        } else if (bio.includes('producer')) {
-            typeLabel = 'PRODUCER';
-        }
+        typeLabel = getKnownFor(person!.bio).toUpperCase();
+        if (typeLabel === 'ENTERTAINMENT') typeLabel = 'PERSON';
+        if (typeLabel === 'ACTING') typeLabel = 'ACTOR';
+        if (typeLabel === 'DIRECTING') typeLabel = 'DIRECTOR';
+        if (typeLabel === 'PRODUCTION') typeLabel = 'PRODUCER';
     }
 
     // Extract image URL safely
     const imageUrl = isWork
-        ? hit.work.poster?.thumbnailImageUrl
-        : hit.person.headshot?.thumbnailImageUrl;
+        ? work?.poster?.thumbnailImageUrl
+        : person?.headshot?.thumbnailImageUrl;
 
     // determine snippet text
     const snippet = isWork
-        ? `${hit.work.workType === 'MOVIE' ? 'Movie' : 'TV Show'}${hit.work.releaseYear ? ` • ${hit.work.releaseYear}` : ''}`
-        : cleanBioText(hit.person.bio);
+        ? `${work!.workType === 'MOVIE' ? 'Movie' : 'TV Show'}${work!.releaseYear ? ` • ${work!.releaseYear}` : ''}`
+        : cleanBioText(person!.bio);
 
     return (
         <div

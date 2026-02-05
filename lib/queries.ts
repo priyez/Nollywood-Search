@@ -199,6 +199,30 @@ export interface Theme {
   description: string | null;
 }
 
+export interface Person {
+  id: string;
+  name: string;
+  slug: string;
+  bio: string | null;
+  age: number | null;
+  gender: string | null;
+  aliases: string[];
+  nationality: string[];
+  deceased: boolean;
+  birthDate: string | null;
+  birthName: string | null;
+  birthPlace: string | null;
+  deathDate: string | null;
+  status: string;
+  verified: boolean;
+  featured: boolean;
+  externalLinks: ExternalLink[];
+  headshot?: Headshot;
+  works?: {
+    items: Work[];
+  };
+}
+
 export interface CastMember {
   id: string;
   role: string;
@@ -273,48 +297,6 @@ export interface ExternalLink {
   label: string | null;
   icon: string | null;
   platform: string | null;
-}
-
-export interface WorkItem {
-  id: string;
-  title: string;
-  slug: string;
-  workType: WorkType;
-  releaseYear: number | null;
-  poster?: Poster;
-}
-
-export interface Work {
-  id: string;
-  title: string;
-  slug: string;
-  workType: WorkType;
-  poster?: Poster;
-  trailer?: Trailer;
-}
-
-export interface Person {
-  id: string;
-  name: string;
-  slug: string;
-  bio: string | null;
-  age: number | null;
-  gender: string | null;
-  aliases: string[];
-  nationality: string[];
-  deceased: boolean;
-  birthDate: string | null;
-  birthName: string | null;
-  birthPlace: string | null;
-  deathDate: string | null;
-  status: string;
-  verified: boolean;
-  featured: boolean;
-  externalLinks: ExternalLink[];
-  headshot?: Headshot;
-  works?: {
-    items: WorkItem[];
-  };
 }
 
 export interface WorkSearchHit {

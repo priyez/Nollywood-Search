@@ -57,91 +57,215 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 - **300ms delay** prevents excessive API calls
 - Cancels pending requests when user types
 
-### 2. Stale Request Handling
-This ensures only the latest results are shown:
+### 2. Role Detection (Heuristic)
+Since the API doesn't return a primary role for people in search results, we've implemented a heuristic in `lib/textUtils.tsx`:
+- Scans bio text for keywords like "actor", "director", "producer".
+- Dynamically assigns specific `TypeBadge` labels (e.g., ACTOR, DIRECTOR).
+- Provides a more informative UI than a generic "PERSON" label.
 
-1. **Debouncing** - Cancels pending timeouts
-2. **Reference Tracking** - tracks the latest search term
-
-### 3. User Experience
-- **Minimum 2 characters** required to search
-- **Loading states** with subtle spinner
-- **Keyboard navigation** (Arrow keys, Enter, Escape)
-- **Prefetch on hover** for instant page loads
-- **Mobile-optimized** dropdown
+### 3. Error Resilience & Partial Data
+The application is designed to be resilient to backend inconsistencies:
+- **Apollo Error Policy**: Set to `all` to allow rendering partial data even if some sub-queries fail.
+- **Defensive Rendering**: Null-checks in `SearchResultItem` and `SearchResults` prevent crashes from malformed data.
+- **Graceful Fallbacks**: Shows friendly "No results found" instead of raw errors for common "not found" scenarios.
 
 ## GraphQL Operations
 
 ### Search Query
 ```graphql
-query Search($input: SearchInput!) {
-  search(input: $input) {
-    collections {
-      name
-      displayName
-      found
-      hits {
-        ... on WorkSearchHit {
-          work { id, title, slug, workType }
-        }
-        ... on PersonSearchHit {
-          person { id, name, slug, bio }
+  query Search($input: SearchInput!) {
+    search(input: $input) {
+      collections {
+        name
+        displayName
+        found
+        hits {
+          __typename
+          ... on WorkSearchHit {
+            work {
+              id
+              title
+              slug
+              releaseYear
+              workType
+              poster {
+                url
+                thumbnailImageUrl
+                altText
+              }
+            }
+          }
+          ... on PersonSearchHit {
+            person {
+              id
+              name
+              slug
+              bio
+              headshot {
+                url
+                thumbnailImageUrl
+                altText
+              }
+            }
+          }
         }
       }
     }
   }
-}
 ```
 
 ### Work Detail Query
 ```graphql
-query GetWork($identifier: String!) {
-  getWork(identifier: $identifier) {
-    id, title, slug, workType
+  query GetWork($identifier: String!) {
+    getWork(identifier: $identifier) {
+      id
+      title
+      slug
+      workType
+      summary
+      synopsis
+      releaseDate
+      releaseYear
+      runtime
+      contentRating
+      isStreamable
+      isInTheatre
+      languages
+      spokenLanguages
+      poster {
+        id
+        url
+        thumbnailImageUrl
+        title
+        altText
+        description
+      }
+      backdrop {
+        id
+        url
+        thumbnailImageUrl
+        title
+        altText
+        description
+      }
+      trailer {
+        id
+        url
+        thumbnailImageUrl
+        title
+        altText
+        description
+      }
+      genres {
+        id
+        name
+        slug
+        description
+      }
+      themes {
+        id
+        name
+        slug
+        description
+      }
+      cast {
+        id
+        role
+        department
+        characterName
+        isLead
+        isFeatured
+        person {
+          id
+          name
+          slug
+          headshot {
+            url
+            thumbnailImageUrl
+            altText
+          }
+        }
+      }
+      crew {
+        id
+        role
+        department
+        person {
+          id
+          name
+          slug
+          headshot {
+            url
+            thumbnailImageUrl
+            altText
+          }
+        }
+      }
+    }
   }
-}
 ```
 
 ### Person Detail Query
 ```graphql
-query GetPerson($identifier: String!) {
-  getPerson(identifier: $identifier) {
-    id, name, slug, bio
+ query GetPerson($identifier: String!) {
+    getPerson(identifier: $identifier) {
+      id
+      name
+      slug
+      bio
+      age
+      gender
+      aliases
+      nationality
+      deceased
+      birthDate
+      birthName
+      birthPlace
+      deathDate
+      status 
+      verified
+      featured
+      externalLinks {
+        url
+        label
+        icon
+        platform
+      }
+      headshot {
+        url
+        thumbnailImageUrl
+        altText
+      }
+      works {
+        items {
+          id
+          title
+          slug
+          workType
+          releaseYear
+          poster {
+            url
+            thumbnailImageUrl
+            altText
+          }
+        }
+      }
+    }
   }
-}
 ```
-
-## API Limitations
-
-The GraphQL API does not provide all fields mentioned in the original requirements. The following fields are **not available** in the current schema:
-
-### Search Results
-- **Year** - Not available for works in search results
-- **Overview** - Not available for works in search results  
-- **Primary Role** - Not available for people in search results
-
-### What Was Displayed Instead
-
-**Search Results:**
-- **Title/Name** - Available and displayed with highlighting
-- **Type Label** - Shows MOVIE, TV_SHOW, or PERSON
-- **Snippet** - For works: "Movie" or "TV Show" | For people: bio text
-- **Bio** - Available for people (cleaned from markdown)
-
-The implementation works with the **available schema fields** and provides a fallback experience where data is missing.
 
 ## Key Features
 
-- **Debounced Typeahead** - Smooth, responsive search
-- **Stale Request Handling** - Always shows latest results
-- **Keyboard Navigation** - Full accessibility support
-- **Result Count Display** - "Found X works/people"
-- **Text Highlighting** - Bold matching terms
-- **Prefetch on Hover** - Instant page loads
-- **Mobile Optimization** - Responsive design
-- **SSR & SEO** - Server-rendered with dynamic metadata
-- **Custom Hooks** - Reusable logic (useDebounce, useClickOutside, useKeyboardNavigation)
-- **Component Library** - 15+ reusable components
+- **Debounced Typeahead** - Smooth, responsive search with dynamic results.
+- **Global Search Header** - Search from anywhere (Home, Person, or Work detail pages).
+- **Dynamic Role Detection** - Smart role labeling (Actor, Director, Producer) for people.
+- **Error Resilience** - Robust handling of partial API failures using `errorPolicy: 'all'`.
+- **Keyboard Navigation** - Full accessibility support (Arrow keys, Enter, Escape).
+- **Text Highlighting** - Bold matching terms in real-time.
+- **Prefetch on Hover** - Instant page transitions using Next.js prefetching.
+- **Mobile Optimization** - Responsive design with custom dropdown layouts.
+- **Centralized Utilities** - Shared logic for age calculation, biographic cleaning, and date formatting.
+- **SSR & SEO** - Server-rendered with dynamic metadata for every page.
 
 
 ## Environment Variables
@@ -161,8 +285,6 @@ To use a different endpoint, update this file or create a `.env.local`:
 ## Testing
 
 ```bash
-# Run type checking
-npm run type-check
 
 # Build for production
 npm run build
@@ -173,23 +295,16 @@ npm start
 
 ## Assumptions Made
 
-1. **API Schema** - Assumed available fields based on GraphQL inspection
-2. **Bio Formatting** - Assumed bios may contain markdown (implemented cleaning logic)
-3. **Search Collections** - Hardcoded to `['works', 'people']` based on requirements
+1. **API Schema** - Structure and fields were derived from live GraphQL introspection.
+2. **Bio Formatting** - Assumed bios may contain markdown or raw text (implemented cleaning/normalization logic).
+3. **Role Inference** - Since the API doesn't provide a "primary role", i assume keywords in the biography are reliable indicators for role labeling.
+4. **Search Scope** - Explicitly scoped to `['works', 'people']` per requirements.
 
 ## Future Improvements
 
-Given more time, I would add:
+- **Search History** - Persistent recent searches using local storage.
+- **Advanced Filtering** - Ability to filter results by year, genre, or role.
+- **Skeleton Loading** - Better perceived performance with skeleton states instead of spinners.
+- **Dark Mode** - Full systemic support for dark/high-contrast themes.
 
-### Features
-- **Search History** - Recent searches with local storage
-
-### Technical
-- **Image Optimization** - If API provides images
-
-### UX
-- **Search Suggestions** - "Did you mean...?"
-- **Related Items** - "People also searched for..."
-- **Rich Previews** - Show more details on hover
-- **Dark Mode** - Theme toggle
 

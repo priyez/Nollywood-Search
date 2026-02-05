@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { SearchBox } from '@/components/SearchBox';
 import { Button } from '@/components/ui/Button';
+import { BrandHeader } from '@/components/layout';
 
 export const metadata: Metadata = {
   title: 'Nollywood.com Search – Movies, TV Shows & Stars',
@@ -19,14 +20,7 @@ export default function Home() {
 
       <main className="flex-1 flex flex-col items-center justify-center px-4 relative z-10">
         {/* Logo Section */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-black mb-2">
-            Nollywood
-          </h1>
-          <p className="text-gray-500 font-medium text-right uppercase text-[10px]">
-            The Digital Operating System
-          </p>
-        </div>
+        <BrandHeader className="mb-6" />
 
         {/* Search Section */}
         <div className="w-full max-w-2xl z-10">
@@ -42,7 +36,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-gray-50 text-center relative z-10">
+      <footer className="py-8 px-4 border-t border-gray-50 text-center relative ">
         <p className="text-gray-400 text-sm">
           &copy; {new Date().getFullYear()} Nollywood.com. Powering the Nollywood and African Film/TV value chain.
         </p>

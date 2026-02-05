@@ -78,13 +78,13 @@ export default async function WorkPage({ params }: Props) {
                     <div className="space-y-6">
                         {/* Poster - Hidden on mobile as it's repetitive with backdrop, shown on desktop */}
                         {work.poster && (
-                            <div className="hidden md:block relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg -mt-20 z-10 border-4 border-white">
+                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg -mt-24 md:-mt-20 z-10 border-4 border-white w-48 md:w-full mx-auto md:mx-0">
                                 <Image
                                     src={work.poster.url}
                                     alt={work.poster.altText || work.title}
                                     fill
                                     className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, 250px"
+                                    sizes="(max-width: 768px) 192px, 250px"
                                 />
                             </div>
                         )}

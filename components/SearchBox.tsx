@@ -10,7 +10,7 @@ import { Card } from './ui/Card';
 import { useRouter } from 'next/navigation';
 import { useDebounce, useClickOutside, useKeyboardNavigation } from '@/hooks';
 
-export function SearchBox() {
+export function SearchBox({ small = false }: { small?: boolean }) {
     const [term, setTerm] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -20,7 +20,10 @@ export function SearchBox() {
 
     const [search, { data, loading, error }] = useLazyQuery<SearchData>(
         SEARCH_QUERY,
-        { fetchPolicy: 'network-only' }
+        {
+            fetchPolicy: 'network-only',
+            errorPolicy: 'all'
+        }
     );
 
     const performSearch = useCallback((value: string) => {
@@ -47,21 +50,25 @@ export function SearchBox() {
         performSearch(debouncedTerm);
     }, [debouncedTerm, performSearch]);
 
-    // Flatten all hits for keyboard navigation
+    // Flatten and filter hits for keyboard navigation
     const allHits = useMemo(() => {
         const collections = data?.search.collections || [];
-        return collections.flatMap((collection: Collection) => collection.hits);
+        return collections
+            .flatMap((collection: Collection) => collection.hits)
+            .filter((hit: SearchHit) => {
+                if (hit.__typename === 'WorkSearchHit') return !!hit.work;
+                if (hit.__typename === 'PersonSearchHit') return !!hit.person;
+                return false;
+            });
     }, [data]);
 
     const handleSelect = (hit: SearchHit) => {
-        // Close dropdown when item is selected
         setIsOpen(false);
         if (hit.__typename === 'WorkSearchHit') {
             router.push(`/work/${hit.work.slug}`);
         } else {
             router.push(`/person/${hit.person.slug}`);
         }
-        // Return focus for accessibility
         setTimeout(() => inputRef.current?.focus(), 100);
     };
 
@@ -70,14 +77,12 @@ export function SearchBox() {
         inputRef.current?.blur();
     }, []);
 
-    // Use keyboard navigation hook
-    const { selectedIndex, setSelectedIndex, handleKeyDown } = useKeyboardNavigation({
+    const { selectedIndex, handleKeyDown } = useKeyboardNavigation({
         items: allHits,
         onSelect: handleSelect,
         onClose: handleClose,
     });
 
-    // Use click outside hook
     useClickOutside(menuRef, () => setIsOpen(false));
 
     return (
@@ -93,12 +98,12 @@ export function SearchBox() {
                     onFocus={() => {
                         if (term.length >= 2) setIsOpen(true);
                     }}
-                    className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-full 
+                    className={`w-full border-2 border-gray-200 rounded-full 
                         focus:border-black focus:outline-none transition-colors
-                        placeholder:text-gray-400"
+                        placeholder:text-gray-400 ${small ? 'px-4 py-2 text-sm' : 'px-6 py-4 text-lg'}`}
                 />
                 {loading && (
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <div className={`absolute right-4 top-1/2 -translate-y-1/2 ${small ? 'scale-75' : ''}`}>
                         <Spinner />
                     </div>
                 )}
@@ -106,9 +111,8 @@ export function SearchBox() {
 
             {isOpen && (
                 <Card className="absolute top-full left-0 right-0 mt-2 z-50 overflow-hidden
-                    md:max-h-[500px] max-h-[70vh]
-                    md:static md:w-full
-                    shadow-2xl">
+                    max-h-[70vh] md:max-h-[500px]
+                    shadow-2xl border border-gray-100 ring-1 ring-black/5">
                     <SearchResults
                         data={data}
                         error={error?.message}
