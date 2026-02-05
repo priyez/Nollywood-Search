@@ -1,6 +1,6 @@
 # Nollywood Search
 
-A Google-like search experience for Nollywood movies, TV shows, and people. Built with Next.js 15, Apollo Client, and TypeScript.
+A Google-like search experience for Nollywood movies, TV shows, and people. Built with Next.js, Apollo Client, and TypeScript.
 
 
 ## Quick Start
@@ -8,7 +8,7 @@ A Google-like search experience for Nollywood movies, TV shows, and people. Buil
 ### Prerequisites
 
 - Node.js 18+ 
-- npm, pnpm, or yarn
+- npm
 
 ### Installation
 
@@ -19,17 +19,9 @@ cd Nollywood-Search
 
 # Install dependencies
 npm install
-# or
-pnpm install
-# or
-yarn install
 
 # Run development server
 npm run dev
-# or
-pnpm dev
-# or
-yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the application.
@@ -63,15 +55,13 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 
 ### 1. Debouncing
 - **300ms delay** prevents excessive API calls
-- Uses custom `useDebounce` hook
 - Cancels pending requests when user types
 
 ### 2. Stale Request Handling
 This ensures only the latest results are shown:
 
 1. **Debouncing** - Cancels pending timeouts
-2. **Reference Tracking** - `lastTermRef` tracks the latest search term
-3. **Apollo Cancellation** - Automatic in-flight request cancellation via `fetchPolicy: 'network-only'`
+2. **Reference Tracking** - tracks the latest search term
 
 ### 3. User Experience
 - **Minimum 2 characters** required to search
@@ -153,21 +143,6 @@ The implementation works with the **available schema fields** and provides a fal
 - **Custom Hooks** - Reusable logic (useDebounce, useClickOutside, useKeyboardNavigation)
 - **Component Library** - 15+ reusable components
 
-## Architecture Decisions
-
-### Why No State Management Library?
-- **Apollo Client** handles all server state (caching, normalization)
-- **Local UI state** is minimal and component-scoped
-
-### Custom Hooks
-Extracted common patterns for:
-- **Reusability** - Use across multiple components
-
-### Component Composition
-Created 15+ reusable components:
-- **Search components** - CollectionHeader, TypeBadge, SearchResultIcon, SearchResultItem
-- **Layout components** - DetailPageLayout, PageTitle, Tag
-- **UI components** - Button, Input, Spinner, Card
 
 ## Environment Variables
 
@@ -211,7 +186,6 @@ Given more time, I would add:
 
 ### Technical
 - **Image Optimization** - If API provides images
-- **Caching Strategy** - Service worker for offline support
 
 ### UX
 - **Search Suggestions** - "Did you mean...?"
