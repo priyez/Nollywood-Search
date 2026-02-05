@@ -57,11 +57,10 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 - **300ms delay** prevents excessive API calls
 - Cancels pending requests when user types
 
-### 2. Role Detection (Heuristic)
-Since the API doesn't return a primary role for people in search results, we've implemented a heuristic in `lib/textUtils.tsx`:
+### 2. Role Detection (Smart role labeling)
+Since the API doesn't return a primary role for people in search results, I implemented a smart role labeling in `lib/textUtils.tsx`:
 - Scans bio text for keywords like "actor", "director", "producer".
 - Dynamically assigns specific `TypeBadge` labels (e.g., ACTOR, DIRECTOR).
-- Provides a more informative UI than a generic "PERSON" label.
 
 ### 3. Error Resilience & Partial Data
 The application is designed to be resilient to backend inconsistencies:
