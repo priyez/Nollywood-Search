@@ -77,7 +77,7 @@ export default async function WorkPage({ params }: Props) {
                     <div className="space-y-6">
                         {/* Poster - Hidden on mobile as it's repetitive with backdrop, shown on desktop */}
                         {work.poster && (
-                            <div className="animate-shimmer relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg -mt-12 md:-mt-16 z-10 border-4 border-white w-48 md:w-full mx-auto md:mx-0">
+                            <div className="animate-shimmer relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg -mt-12 md:-mt-14 z-10 border-4 border-white w-48 md:w-full mx-auto md:mx-0">
                                 <Image
                                     src={work.poster.url}
                                     alt={work.poster.altText || work.title}
