@@ -1,6 +1,6 @@
 # Nollywood Search
 
-A production-ready, Google-like search experience for Nollywood movies, TV shows, and people. Built with Next.js 15, Apollo Client, and TypeScript.
+A Google-like search experience for Nollywood movies, TV shows, and people. Built with Next.js 15, Apollo Client, and TypeScript.
 
 
 ## Quick Start
@@ -67,7 +67,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 - Cancels pending requests when user types
 
 ### 2. Stale Request Handling
-Three-layer protection ensures only the latest results are shown:
+This ensures only the latest results are shown:
 
 1. **Debouncing** - Cancels pending timeouts
 2. **Reference Tracking** - `lastTermRef` tracks the latest search term
@@ -130,15 +130,15 @@ The GraphQL API does not provide all fields mentioned in the original requiremen
 - **Overview** - Not available for works in search results  
 - **Primary Role** - Not available for people in search results
 
-### What We Display Instead
+### What Was Displayed Instead
 
 **Search Results:**
 - **Title/Name** - Available and displayed with highlighting
 - **Type Label** - Shows MOVIE, TV_SHOW, or PERSON
-- **Snippet** - For works: "Movie" or "TV Show" | For people: Cleaned bio text
+- **Snippet** - For works: "Movie" or "TV Show" | For people: bio text
 - **Bio** - Available for people (cleaned from markdown)
 
-The implementation works with the **available schema fields** and provides a clean fallback experience where data is missing.
+The implementation works with the **available schema fields** and provides a fallback experience where data is missing.
 
 ## Key Features
 
