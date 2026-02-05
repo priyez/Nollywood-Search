@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { DetailPageLayout, PageTitle, Tag } from '@/components/layout';
+import { InfoItem } from '@/components/person';
 import { getWorkMetadata, fetchWork } from '@/lib/metadata';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -21,15 +22,7 @@ function formatRuntime(minutes: number | null | undefined): string | null {
     return `${hours}h ${mins}m`;
 }
 
-function InfoItem({ label, value }: { label: string; value: string | null | undefined }) {
-    if (!value) return null;
-    return (
-        <div className="mb-4">
-            <h4 className="font-bold text-sm text-gray-900">{label}</h4>
-            <p className="text-sm text-gray-600">{value}</p>
-        </div>
-    );
-}
+
 
 export default async function WorkPage({ params }: Props) {
     const { slug } = await params;
@@ -57,7 +50,13 @@ export default async function WorkPage({ params }: Props) {
                             sizes="100vw"
                         />
                     ) : (
-                        <div className="absolute inset-0 bg-gray-900" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-gray-900 to-black flex items-center justify-center">
+                            <div className="opacity-10 scale-[2.5] flex items-center justify-center">
+                                <svg className="w-48 h-48 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a2 2 0 002-2V6a2 2 0 00-2-2H4a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                        </div>
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end p-6 md:p-10">
                         <div className="text-white max-w-4xl">
@@ -78,7 +77,7 @@ export default async function WorkPage({ params }: Props) {
                     <div className="space-y-6">
                         {/* Poster - Hidden on mobile as it's repetitive with backdrop, shown on desktop */}
                         {work.poster && (
-                            <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg -mt-24 md:-mt-20 z-10 border-4 border-white w-48 md:w-full mx-auto md:mx-0">
+                            <div className="animate-shimmer relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg -mt-12 md:-mt-16 z-10 border-4 border-white w-48 md:w-full mx-auto md:mx-0">
                                 <Image
                                     src={work.poster.url}
                                     alt={work.poster.altText || work.title}

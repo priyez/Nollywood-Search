@@ -11,14 +11,14 @@ export function BrandHeader({ className = "", size = 'lg', align = 'center' }: B
         right: 'text-right'
     };
     const titleSizes = {
-        sm: 'text-2xl',
+        sm: 'text-xl',
         md: 'text-4xl',
         lg: 'text-4xl md:text-7xl',
         xl: 'text-6xl md:text-8xl'
     };
 
     const subtitleSizes = {
-        sm: 'text-[8px]',
+        sm: 'text-[6px]',
         md: 'text-[9px]',
         lg: 'text-[10px]',
         xl: 'text-[12px]'
